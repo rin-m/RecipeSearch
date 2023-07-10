@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>検索結果</title>
+        <link rel="stylesheet" href="static/style.css">
+    </head>
+    <body>
+        <h1>検索結果</h1>
+        <table>
+            <tr>
+                <th>ユークリッド距離</th>
+                <th>料理名</th>
+            </tr>
+
+            {% for row in recommended_recipes %}
+            <tr>
+                <td>{{ row[7] }}</td>
+                <td>{{ row[0] }}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+    </body>
+</html>
