@@ -101,10 +101,19 @@ th {
 }
 
 .button:hover {
-background-color: #0056b3;
+    background-color: #0056b3;
 }
 
 .button:focus {
-outline: none;
-box-shadow: 0 0 0 2px #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px #007bff;
+}
+
+input.slider {
+    margin: auto;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    height: 8px;
+    border-radius: 5px
 }
