@@ -48,7 +48,7 @@ def mood1():
     recommended_recipes = mood_list()
     return render_template('results.html', recommended_recipes=recommended_recipes)
 
-def mood_list():
+def mood_sql():
     # データベースに接続
     conn = sqlite3.connect("recipe.db")
     cursor = conn.cursor()
@@ -65,6 +65,13 @@ def mood_list():
     # データベース接続を閉じる
     cursor.close()
     conn.close()
+    return recipe_list
+
+
+def mood_list():
+    # データベースからデータを取得
+    recipe_list = mood_sql()
+    print(recipe_list)
 
     # POSTメソッドから取得した気分の値とレシピデータの気分の値のユークリッド距離を算出
     euclidean_distance_list = euclidean_distance(recipe_list)
