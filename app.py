@@ -45,7 +45,7 @@ def keyword_sql():
 @app.route("/mood1", methods = ["POST"])
 def mood1():
     # テンプレートに結果を渡してレンダリング
-    recommended_recipes = mood_list()
+    recommended_recipes = recommended_recipes()
     return render_template('results.html', recommended_recipes=recommended_recipes)
 
 def mood_sql():
@@ -68,7 +68,7 @@ def mood_sql():
     return recipe_list
 
 
-def mood_list():
+def recommended_recipes():
     # データベースからデータを取得
     recipe_list = mood_sql()
     print(recipe_list)
