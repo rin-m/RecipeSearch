@@ -140,12 +140,13 @@ def euclidean_distance(recipe_list):
 def sort_by_euclidean_distance(recipe_list, euclidean_distance_list):
     # ユークリッド距離の値のリストとデータベースから取得したデータのリストを結合
     combined_list = []
-    for row_num in range(len(recipe_list)):
-        recipe_list[row_num].append(euclidean_distance_list[row_num])
-        combined_list.append(recipe_list[row_num])
-    
+    recipe_list_deleted_label = recipe_list[1:] # 先頭行のラベルを除く
+    for row_num in range(len(recipe_list_deleted_label)):
+        recipe_list_deleted_label[row_num].append(euclidean_distance_list[row_num])
+        combined_list.append(recipe_list_deleted_label[row_num])
+
     # ユークリッド距離に基づいてリストをソート
-    sorted_list = sorted(combined_list, key=lambda x: x[7])
+    sorted_list = sorted(combined_list, key=lambda x: x[8])
 
     return sorted_list
 
