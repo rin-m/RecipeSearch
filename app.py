@@ -1,6 +1,7 @@
 import sqlite3
 import numpy as np
 from flask import Flask, render_template, request, escape
+from sklearn.preprocessing import StandardScaler
 
 
 app = Flask(__name__)
@@ -105,10 +106,14 @@ def euclidean_distance(recipe_list):
     # POSTメソッドから取得したmoodの値(-5~5)をリストに保存
     squared_diff = []
     moods = recipe_list[0][4:8] # レシピデータの気分のラベルを取得['mood', 'body', 'money', 'time']
-    squared_diff_moods = [recipe_list_mood,
-                          recipe_list_body,
-                          recipe_list_money,
-                          recipe_list_time]
+
+    # レシピデータの気分の標準化を行う
+    recipe_list_mood_std = normalization(recipe_list_mood)
+    recipe_list_body_std = normalization(recipe_list_body)
+    recipe_list_money_std = normalization(recipe_list_money)
+    recipe_list_time_std = normalization(recipe_list_time)
+
+    squared_diff_moods = [recipe_list_mood_std, recipe_list_body_std, recipe_list_money_std, recipe_list_time_std]
 
     # レシピデータの気分のラベルの数だけ繰り返す0~3
     for row in range(len(moods)):
@@ -149,6 +154,13 @@ def sort_by_euclidean_distance(recipe_list, euclidean_distance_list):
     sorted_list = sorted(combined_list, key=lambda x: x[8])
 
     return sorted_list
+
+
+# 正規化する関数
+def normalization(x):
+    scaler = StandardScaler()
+    x_std = scaler.fit_transform(x)
+    return x_std
 
 
 if __name__ == "__main__":
