@@ -45,7 +45,7 @@ def keyword_sql():
 @app.route("/mood1", methods = ["POST"])
 def mood1():
     # テンプレートに結果を渡してレンダリング
-    recommended_recipes = recommended_recipes()
+    recommended_recipes = recommended_recipe_list()
     return render_template('results.html', recommended_recipes=recommended_recipes)
 
 def mood_sql():
@@ -68,10 +68,9 @@ def mood_sql():
     return recipe_list
 
 
-def recommended_recipes():
+def recommended_recipe_list():
     # データベースからデータを取得
     recipe_list = mood_sql()
-    print(recipe_list)
 
     # POSTメソッドから取得した気分の値とレシピデータの気分の値のユークリッド距離を算出
     euclidean_distance_list = euclidean_distance(recipe_list)
@@ -82,41 +81,49 @@ def recommended_recipes():
     return recommended_recipes
 
 
-def euclidean_distance(recipe_list_items):
+def euclidean_distance(recipe_list):
 
-    # レシピデータの気分を取得
+    # レシピデータの気分と分類を取得
+    recipe_list_syusyoku = []
+    recipe_list_syusai = []
+    recipe_list_hukusai = []
     recipe_list_mood = []
     recipe_list_body = []
-    recipe_list_taste = []
-    recipe_list_time = []
     recipe_list_money = []
-    recipe_list_modify = []
-    for row in recipe_list_items:
-        recipe_list_mood.append(int(list(row)[1]))  # 「精神」の行のみを抽出
-        recipe_list_body.append(int(list(row)[2]))  # 「身体」の行のみを抽出
-        recipe_list_taste.append(int(list(row)[3]))  # 「味覚」の行のみを抽出
-        recipe_list_time.append(int(list(row)[4]))  # 「時間」の行のみを抽出
-        recipe_list_money.append(int(list(row)[5]))  # 「経済」の行のみを抽出
-        recipe_list_modify.append(int(list(row)[6]))  # 「変化」の行のみを抽出
+    recipe_list_time = []
+
+    # レシピデータの気分と分類をリストに格納(先頭行のラベルを除く)
+    for row in recipe_list[1:]:
+        recipe_list_syusyoku.append(int(list(row)[1]))  # 「主食」の行のみを抽出
+        recipe_list_syusai.append(int(list(row)[2]))    # 「主菜」の行のみを抽出
+        recipe_list_hukusai.append(int(list(row)[3]))   # 「副菜」の行のみを抽出
+        recipe_list_mood.append(int(list(row)[4]))      # 「精神」の行のみを抽出
+        recipe_list_body.append(int(list(row)[5]))      # 「身体」の行のみを抽出
+        recipe_list_money.append(int(list(row)[6]))     # 「経済」の行のみを抽出
+        recipe_list_time.append(int(list(row)[7]))      # 「時間」の行のみを抽出
 
     # POSTメソッドから取得したmoodの値(-5~5)をリストに保存
     squared_diff = []
-    moods = ["mood", "body", "taste", "time", "money", "modify"]
-    squared_diff_moods = [recipe_list_mood, recipe_list_body, recipe_list_taste, recipe_list_time, recipe_list_money, recipe_list_modify]
+    moods = recipe_list[0][4:8] # レシピデータの気分のラベルを取得['mood', 'body', 'money', 'time']
+    squared_diff_moods = [recipe_list_mood,
+                          recipe_list_body,
+                          recipe_list_money,
+                          recipe_list_time]
 
+    # レシピデータの気分のラベルの数だけ繰り返す0~3
     for row in range(len(moods)):
 
-        # 「(例)精神」の行のみのリスト
         recipe_list_item = squared_diff_moods[row]
 
+        # POSTメソッドから取得したmoodの値をリストに保存
         mood_value = [float(request.form[moods[row]])] * len(recipe_list_item)
 
         if float(request.form[moods[row]]) != 0:
             recipe_mood_array = np.array(recipe_list_item)
             mood_array = np.array(mood_value)
-            diff_mood = recipe_mood_array - mood_array
-            squared_diff_mood = np.square(diff_mood)
-        else: # スライダーが0を選択しているときはユークリッド距離を計算しない
+            diff_mood = recipe_mood_array - mood_array  # レシピデータの気分とPOSTメソッドから取得したmoodの値の差を計算
+            squared_diff_mood = np.square(diff_mood)    # 差の2乗を計算
+        else:   # スライダーが0を選択しているときはユークリッド距離を計算しない
             squared_diff_mood = np.zeros(len(recipe_list_item), int)
 
         squared_diff.append(squared_diff_mood)
