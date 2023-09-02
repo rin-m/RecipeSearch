@@ -21,5 +21,21 @@
             {% endfor %}
 
         </table>
+
+        <h1>多様性無し α=1</h1>
+        <table>
+            <tr>
+                <th>ユークリッド距離</th>
+                <th>料理名</th>
+            </tr>
+
+            {% for row in sorted_list[:10] %}
+            <tr>
+                <td>{{ row[8] }}</td>
+                <td>{{ row[0] }}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
     </body>
 </html>

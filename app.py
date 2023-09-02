@@ -46,8 +46,8 @@ def keyword_sql():
 @app.route("/mood1", methods = ["POST"])
 def mood1():
     # テンプレートに結果を渡してレンダリング
-    recommended_recipes = recommended_recipe_list()
-    return render_template('results.html', recommended_recipes=recommended_recipes)
+    recommended_recipes, sorted_list = recommended_recipe_list()
+    return render_template('results.html', recommended_recipes=recommended_recipes, sorted_list=sorted_list)
 
 def mood_sql():
     # データベースに接続
@@ -83,9 +83,9 @@ def recommended_recipe_list():
     # euclidean_distance_list = euclidean_distance(recipe_list)
 
     # ユークリッド距離の値のリストとレシピデータのリストを結合
-    recommended_recipes = sort_by_distance(recipe_list, euclidean_distance_list)
+    recommended_recipes, sorted_list = sort_by_distance(recipe_list, euclidean_distance_list)
 
-    return recommended_recipes
+    return recommended_recipes, sorted_list
 
 '''
 def euclidean_distance(recipe_list):
@@ -225,7 +225,7 @@ def sort_by_distance(recipe_list, euclidean_distance_list):
     sorted_list_reciprocal = sort_list_reciprocal(sorted_list)
     recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, 10, 0.5)
 
-    return recommended_recipe_list
+    return recommended_recipe_list, sorted_list
 
 
 # リストの要素の値を逆数にしてリストを返す
