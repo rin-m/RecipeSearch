@@ -153,7 +153,66 @@ def sort_by_euclidean_distance(recipe_list, euclidean_distance_list):
     # ユークリッド距離に基づいてリストをソート
     sorted_list = sorted(combined_list, key=lambda x: x[8])
 
-    return sorted_list
+    # 多様性検索の機能
+    sorted_list_reciprocal = sort_list_reciprocal(sorted_list)
+    recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, 10, 0.5)
+
+    return recommended_recipe_list
+
+
+# リストの要素の値を逆数にしてリストを返す
+# 検索結果を降順にソートするために使用
+def sort_list_reciprocal(sorted_list):
+    sorted_list_reciprocal = []
+
+    for i in range(len(sorted_list)):
+        sorted_item_reciprocal = sorted_list[i][0:8]
+        sorted_list_reciprocal.append(sorted_item_reciprocal)
+        sorted_list_reciprocal[i].append(1/sorted_list[i][8])
+
+    return sorted_list_reciprocal
+
+
+# コサイン類似度を計算したリストを返す
+def similarity(i, R):
+
+    v1 = i[1:4]
+    sim_list = []
+    eps = 1e-8
+
+    for j in R:
+        v2 = j[1:4]
+        sim = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)) + eps
+        sim_list.append(sim)
+    return sim_list
+
+
+# 検索結果のリストを多様性を考慮してリランキング
+def select_item_id(sorted_list, R, alpha):
+    C = sorted_list
+    max_score = -1
+    max_score_item_id = -1
+    for i in C:
+        if len(R) == 0:
+            return i
+
+        score = alpha * i[8] - (1 - alpha) * max(similarity(i, R))
+
+        if score > max_score:
+            max_score = score
+            max_score_item_id = i
+    return max_score_item_id
+
+
+# 多様性を考慮したリランキングを行う
+def greedy_reranking(C, N, alpha):
+    results = []
+    while len(results) < N:
+        doc_id = select_item_id(C, results, alpha)
+        results.append(doc_id)
+        C.remove(doc_id)
+        
+    return results
 
 
 if __name__ == "__main__":
