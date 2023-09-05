@@ -225,7 +225,7 @@ def sort_by_distance(recipe_list, euclidean_distance_list):
     sorted_list_reciprocal = sort_list_reciprocal(sorted_list)
     recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, 10, 0.5)
 
-    return recommended_recipe_list, sorted_list
+    return recommended_recipe_list, sorted_list_reciprocal
 
 
 # リストの要素の値を逆数にしてリストを返す
