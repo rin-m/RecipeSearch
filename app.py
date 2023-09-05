@@ -197,7 +197,7 @@ def calculate_euclidean_distance(recipe_moods_std, mood_values):
             squared_diff_mood = np.square(diff_mood)                 # 差の2乗を計算
         else:
             # スライダーが0を選択しているときはユークリッド距離を計算しない
-            squared_diff_mood = np.zeros(len(recipe_moods_std), dtype=float)
+            squared_diff_mood = np.zeros(len(recipe_moods_std[0]), dtype=float)
         
         squared_diff.append(squared_diff_mood)
     
