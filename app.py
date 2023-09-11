@@ -15,8 +15,8 @@ def index():
 @app.route("/mood1", methods = ["POST"])
 def mood1():
     # テンプレートに結果を渡してレンダリング
-    recommended_recipes, sorted_list = recommended_recipe_list()
-    return render_template('results.html', recommended_recipes=recommended_recipes, sorted_list=sorted_list)
+    recommended_recipes, sorted_list_no_reranking = recommended_recipe_list()
+    return render_template('results.html', recommended_recipes=recommended_recipes, sorted_list=sorted_list_no_reranking)
 
 def mood_sql():
     # データベースに接続
@@ -129,11 +129,15 @@ def sort_by_distance(recipe_list, euclidean_distance_list):
     # 距離に基づいてリストをソート(昇順)
     sorted_list = sorted(combined_list, key=lambda x: x[8])
 
-    # 多様性検索の機能
+    # ランキングスコアを逆数に変換
     sorted_list_reciprocal = sort_list_reciprocal(sorted_list)
+
+    # 多様性リランキング前のスコアを保存
+    sorted_list_no_reranking = sorted_list_reciprocal.copy()
+
     recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, 10, 0.5)
 
-    return recommended_recipe_list, sorted_list
+    return recommended_recipe_list, sorted_list_no_reranking
 
 
 # リストの要素の値を逆数にしてリストを返す
@@ -145,6 +149,7 @@ def sort_list_reciprocal(sorted_list):
         sorted_item_reciprocal = sorted_list[i][0:8]
         sorted_list_reciprocal.append(sorted_item_reciprocal)
         sorted_list_reciprocal[i].append(1/sorted_list[i][8])
+    print(sorted_list_reciprocal)
 
     return sorted_list_reciprocal
 
