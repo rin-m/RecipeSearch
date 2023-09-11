@@ -1,7 +1,9 @@
 import sqlite3
+import csv
 import numpy as np
 from flask import Flask, render_template, request, escape
 from sklearn import preprocessing
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -55,7 +57,20 @@ def recommended_recipe_list():
     sorted_list_reciprocal, sorted_list = sort_by_distance(recipe_list, euclidean_distance_list)
 
     # 多様性を考慮したリランキングを行う
-    recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, 10, 0.5)
+    # recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, 205, 0.5)
+
+    # 結果をcsvファイルに書き込む
+    # リストをresultに格納
+    result_list = []
+    #alpha_list = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
+    alpha_list = [0.5]
+    R = 205
+    result_list.append(sorted_list)
+    for alhpa in alpha_list:
+        recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, R, alhpa)
+        result_list.append(recommended_recipe_list)
+    
+    write_csv(result_list)
 
     return recommended_recipe_list, sorted_list
     
@@ -150,7 +165,6 @@ def sort_list_reciprocal(sorted_list):
         sorted_item_reciprocal = sorted_list[i][0:8]
         sorted_list_reciprocal.append(sorted_item_reciprocal)
         sorted_list_reciprocal[i].append(1/sorted_list[i][8])
-    print(sorted_list_reciprocal)
 
     return sorted_list_reciprocal
 
@@ -195,6 +209,17 @@ def greedy_reranking(C, N, alpha):
         C.remove(doc_id)
         
     return results
+
+
+# リストをcsvファイルに書き込む
+def write_csv(list):
+    DATE = datetime.now().strftime("%Y%m%d_%H%M%S")
+    FILE_NAME = "./result/data_"+DATE+".csv"
+    with open(FILE_NAME, 'w', newline='') as f:
+        writer = csv.writer(f)
+        for row in list:
+            writer.writerows(row)
+        f.close()
 
 
 if __name__ == "__main__":
