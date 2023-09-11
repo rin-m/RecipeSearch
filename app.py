@@ -52,9 +52,12 @@ def recommended_recipe_list():
     # euclidean_distance_list = euclidean_distance(recipe_list)
 
     # ユークリッド距離の値のリストとレシピデータのリストを結合
-    recommended_recipes, sorted_list = sort_by_distance(recipe_list, euclidean_distance_list)
+    sorted_list_reciprocal, sorted_list = sort_by_distance(recipe_list, euclidean_distance_list)
 
-    return recommended_recipes, sorted_list
+    # 多様性を考慮したリランキングを行う
+    recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, 10, 0.5)
+
+    return recommended_recipe_list, sorted_list
     
 
 def preprocess_recipe_list(recipe_list):
@@ -135,9 +138,7 @@ def sort_by_distance(recipe_list, euclidean_distance_list):
     # 多様性リランキング前のスコアを保存
     sorted_list_no_reranking = sorted_list_reciprocal.copy()
 
-    recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, 10, 0.5)
-
-    return recommended_recipe_list, sorted_list_no_reranking
+    return sorted_list_reciprocal, sorted_list_no_reranking
 
 
 # リストの要素の値を逆数にしてリストを返す
