@@ -56,23 +56,21 @@ def recommended_recipe_list():
     # ユークリッド距離の値のリストとレシピデータのリストを結合
     sorted_list_reciprocal, sorted_list = sort_by_distance(recipe_list, euclidean_distance_list)
 
-    # 多様性を考慮したリランキングを行う
-    # recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, 205, 0.5)
-
+    # 多様性を考慮したリランキングを行う    
     # 結果をcsvファイルに書き込む
     # リストをresultに格納
     result_list = []
-    #alpha_list = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
-    alpha_list = [0.5]
-    R = 205
+    alpha_list = [0, 0.25, 0.5, 0.75, 1]
+    R = 10
     result_list.append(sorted_list)
-    for alhpa in alpha_list:
-        recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, R, alhpa)
+    for alpha in alpha_list:
+        recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, R, alpha)
         result_list.append(recommended_recipe_list)
     
     write_csv(result_list)
 
-    return recommended_recipe_list, sorted_list
+    # α=0.5のとき、多様性を考慮していないとき、の結果を返す
+    return result_list[2], sorted_list
     
 
 def preprocess_recipe_list(recipe_list):
@@ -186,8 +184,8 @@ def similarity(i, R):
 # 検索結果のリストを多様性を考慮してリランキング
 def select_item_id(sorted_list, R, alpha):
     C = sorted_list
-    max_score = -1
-    max_score_item_id = -1
+    max_score = -10
+    max_score_item_id = -10
     for i in C:
         if len(R) == 0:
             return i
