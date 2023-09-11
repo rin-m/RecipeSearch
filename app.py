@@ -62,15 +62,16 @@ def recommended_recipe_list():
     result_list = []
     alpha_list = [0, 0.25, 0.5, 0.75, 1]
     R = 10
-    result_list.append(sorted_list)
+    result_list.append(sorted_list[:R])
     for alpha in alpha_list:
-        recommended_recipe_list = greedy_reranking(sorted_list_reciprocal, R, alpha)
+        C = sorted_list_reciprocal.copy()
+        recommended_recipe_list = greedy_reranking(C, R, alpha)
         result_list.append(recommended_recipe_list)
     
     write_csv(result_list)
 
     # α=0.5のとき、多様性を考慮していないとき、の結果を返す
-    return result_list[2], sorted_list
+    return result_list[3], sorted_list
     
 
 def preprocess_recipe_list(recipe_list):
