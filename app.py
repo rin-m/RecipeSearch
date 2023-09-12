@@ -56,6 +56,9 @@ def recommended_recipe_list():
     # ユークリッド距離の値のリストとレシピデータのリストを結合
     sorted_list_reciprocal, sorted_list = sort_by_distance(recipe_list, euclidean_distance_list)
 
+    # ランキングスコアを正規化
+    sorted_list_reciprocal = normalize_score(sorted_list_reciprocal)
+
     # 多様性を考慮したリランキングを行う    
     # 結果をcsvファイルに書き込む
     # リストをresultに格納
@@ -64,7 +67,6 @@ def recommended_recipe_list():
     alpha_list = [0.0, 0.25, 0.5, 0.75, 1.0]
     #alpha_list = [1]
     R = 10
-    result_list.append(sorted_list[:R])
     for alpha in alpha_list:
         C = sorted_list_reciprocal.copy()
         recommended_recipe_list = greedy_reranking(C, R, alpha)
@@ -73,7 +75,7 @@ def recommended_recipe_list():
     write_csv(result_list)
 
     # α=0.5のとき、多様性を考慮していないとき、の結果を返す
-    return result_list[2], sorted_list
+    return result_list[2], result_list[4]
     
 
 def preprocess_recipe_list(recipe_list):
@@ -219,6 +221,24 @@ def write_csv(list):
             writer.writerows(row)
         f.close()
 
+
+# リストのスコアを正規化する
+def normalize_score(search_result_candidate_list):
+    # スコアだけを抽出して別のリストに格納
+    list_score = []
+    for row in search_result_candidate_list:
+        list_score.append(row[8])
+
+    # スコアを正規化
+    list_score = preprocessing.minmax_scale(list_score, feature_range=(0, 1))
+
+    # 正規化したスコアをリストに戻す
+    list_new = []
+    for i in range(len(search_result_candidate_list)):
+        list_new.append(search_result_candidate_list[i][0:8])
+        list_new[i].append(list_score[i])
+
+    return list_new
 
 if __name__ == "__main__":
     app.run(debug=True)
