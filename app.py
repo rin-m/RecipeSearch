@@ -60,7 +60,9 @@ def recommended_recipe_list():
     # 結果をcsvファイルに書き込む
     # リストをresultに格納
     result_list = []
-    alpha_list = [0, 0.25, 0.5, 0.75, 1]
+    #alpha_list = [i/20 for i in range(0, 21)]
+    alpha_list = [0.0, 0.25, 0.5, 0.75, 1.0]
+    #alpha_list = [1]
     R = 10
     result_list.append(sorted_list[:R])
     for alpha in alpha_list:
@@ -71,7 +73,7 @@ def recommended_recipe_list():
     write_csv(result_list)
 
     # α=0.5のとき、多様性を考慮していないとき、の結果を返す
-    return result_list[3], sorted_list
+    return result_list[2], sorted_list
     
 
 def preprocess_recipe_list(recipe_list):
