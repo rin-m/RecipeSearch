@@ -66,6 +66,7 @@ input.slider {
 
 .slider-item {
     display: flex;
+    font-size: 1.5em;
 }
 
 .slider {
