@@ -113,17 +113,17 @@ def preprocess_recipe_list(recipe_list):
     return recipe_moods_std, mood_values
 
 
-def calculate_euclidean_distance(recipe_moods, mood_values):
+def calculate_euclidean_distance(recipe_moods_std, mood_values):
     squared_diff = []
 
     for mood_index, mood_value in enumerate(mood_values):
         if mood_value != 0:
 
-            diff_mood = np.array(recipe_moods[mood_index]) - mood_value # レシピデータの気分とPOSTメソッドから取得したmoodの値の差を計算
+            diff_mood = np.array(recipe_moods_std[mood_index]) - mood_value # レシピデータの気分とPOSTメソッドから取得したmoodの値の差を計算
             squared_diff_mood = np.square(diff_mood)                 # 差の2乗を計算
         else:
             # スライダーが0を選択しているときはユークリッド距離を計算しない
-            squared_diff_mood = np.zeros(len(recipe_moods[0]), dtype=float)
+            squared_diff_mood = np.zeros(len(recipe_moods_std[0]), dtype=float)
         
         squared_diff.append(squared_diff_mood)
     
@@ -132,6 +132,16 @@ def calculate_euclidean_distance(recipe_moods, mood_values):
 
     # 各要素の平方根を求める
     euclidean_distance_list = np.sqrt(squared_diff_columns_sum)
+
+    # スコアが0となるとき逆数変換したスコアがinfとなる問題を回避するため、0の値を最小値の半分に置換する
+    # euclidean_distance_listの0より大きい最小値を取得
+    min_euclidean_distance = np.min(euclidean_distance_list[np.nonzero(euclidean_distance_list)])
+
+    # min_euclidean_distanceの値を半分にする
+    min_euclidean_distance_half = min_euclidean_distance / 2
+
+    # euclidean_distance_listの0をmin_euclidean_distance_halfに置換
+    euclidean_distance_list = np.where(euclidean_distance_list==0, min_euclidean_distance_half, euclidean_distance_list)
 
     return euclidean_distance_list
 
