@@ -6,32 +6,14 @@
         <link rel="stylesheet" href="static/style.css">
     </head>
     <body>
-        <h1>おすすめレシピ</h1>
+        <h1>検索結果</h1>
         <table>
             <tr>
-                <th>スコア</th>
                 <th>料理名</th>
             </tr>
 
             {% for row in recommended_recipes %}
             <tr>
-                <td>{{ row[8] }}</td>
-                <td>{{ row[0] }}</td>
-            </tr>
-            {% endfor %}
-
-        </table>
-
-        <h1>多様性無し α=1</h1>
-        <table>
-            <tr>
-                <th>スコア</th>
-                <th>料理名</th>
-            </tr>
-
-            {% for row in sorted_list[:10] %}
-            <tr>
-                <td>{{ row[8] }}</td>
                 <td>{{ row[0] }}</td>
             </tr>
             {% endfor %}
