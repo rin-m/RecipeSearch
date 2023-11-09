@@ -17,8 +17,8 @@ def index():
 @app.route("/mood1", methods = ["POST"])
 def mood1():
     # テンプレートに結果を渡してレンダリング
-    recommended_recipes, sorted_list_no_reranking = recommended_recipe_list()
-    return render_template('results.html', recommended_recipes=recommended_recipes, sorted_list=sorted_list_no_reranking)
+    recommended_recipes = recommended_recipe_list()
+    return render_template('results.html', recommended_recipes=recommended_recipes)
 
 def mood_sql():
     # データベースに接続
@@ -57,25 +57,22 @@ def recommended_recipe_list():
     sorted_list_reciprocal, sorted_list = sort_by_distance(recipe_list, euclidean_distance_list)
 
     # ランキングスコアを正規化
-    sorted_list_reciprocal = normalize_score(sorted_list_reciprocal)
+    C = normalized_score_list = normalize_score(sorted_list_reciprocal)
 
     # 多様性を考慮したリランキングを行う    
     # 結果をcsvファイルに書き込む
     # リストをresultに格納
     result_list = []
-    #alpha_list = [i/20 for i in range(0, 21)]
-    alpha_list = [0.0, 0.25, 0.5, 0.75, 1.0]
-    #alpha_list = [1]
+    alpha = 0.5
     R = 10
-    for alpha in alpha_list:
-        C = sorted_list_reciprocal.copy()
-        recommended_recipe_list = greedy_reranking(C, R, alpha)
-        result_list.append(recommended_recipe_list)
+    C = normalized_score_list.copy()
+    recommended_recipe_list = greedy_reranking(C, R, alpha)
+    result_list.append(recommended_recipe_list)
     
     #write_csv(result_list)
 
-    # α=0.5のとき、多様性を考慮していないとき、の結果を返す
-    return result_list[2], result_list[4]
+    # α=0.5のときの結果を返す
+    return result_list[0]
     
 
 def preprocess_recipe_list(recipe_list):
@@ -247,12 +244,12 @@ def normalize_score(search_result_candidate_list):
     list_score = preprocessing.minmax_scale(list_score, feature_range=(0, 1))
 
     # 正規化したスコアをリストに戻す
-    list_new = []
+    normalized_score_list = []
     for i in range(len(search_result_candidate_list)):
-        list_new.append(search_result_candidate_list[i][0:8])
-        list_new[i].append(list_score[i])
+        normalized_score_list.append(search_result_candidate_list[i][0:8])
+        normalized_score_list[i].append(list_score[i])
 
-    return list_new
+    return normalized_score_list
 
 if __name__ == "__main__":
     app.run(debug=True)
