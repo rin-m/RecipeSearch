@@ -72,7 +72,7 @@ def recommended_recipe_list():
         recommended_recipe_list = greedy_reranking(C, R, alpha)
         result_list.append(recommended_recipe_list)
     
-    write_csv(result_list)
+    #write_csv(result_list)
 
     # α=0.5のとき、多様性を考慮していないとき、の結果を返す
     return result_list[2], result_list[4]
@@ -232,6 +232,7 @@ def write_csv(list):
         writer = csv.writer(f)
         for row in list:
             writer.writerows(row)
+            writer.writerow([])
         f.close()
 
 
