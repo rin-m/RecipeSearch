@@ -205,7 +205,7 @@ def select_item_id(sorted_list, R, alpha):
         if len(R) == 0:
             return i
 
-        score = alpha * i[8] - (1 - alpha) * max(distance(i, R))
+        score = alpha * i[8] - (1 - alpha) * distance(i, R)
 
         if score > max_score:
             max_score = score
