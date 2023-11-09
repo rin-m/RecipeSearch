@@ -179,18 +179,21 @@ def sort_list_reciprocal(sorted_list):
     return sorted_list_reciprocal
 
 
-# コサイン類似度を計算したリストを返す
-def similarity(i, R):
+# 多様性を考慮したリランキングを行う
+# ユークリッド距離を計算したリストを返す
+def distance(i, R):
 
-    v1 = i[1:4]
-    sim_list = []
-    eps = 1e-8
+    v1 = np.array(i[1:4])
+    dis_list = []
+    dis_average = 0
 
     for j in R:
-        v2 = j[1:4]
-        sim = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)) + eps
-        sim_list.append(sim)
-    return sim_list
+        v2 = np.array(j[1:4])
+        dis = np.sqrt(np.sum(np.square(v1 - v2), axis=0))
+        dis_list.append(dis)
+
+    dis_average = np.average(dis_list)
+    return dis_average
 
 
 # 検索結果のリストを多様性を考慮してリランキング
@@ -202,7 +205,7 @@ def select_item_id(sorted_list, R, alpha):
         if len(R) == 0:
             return i
 
-        score = alpha * i[8] - (1 - alpha) * max(similarity(i, R))
+        score = alpha * i[8] - (1 - alpha) * max(distance(i, R))
 
         if score > max_score:
             max_score = score
