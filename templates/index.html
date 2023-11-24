@@ -17,7 +17,7 @@
         -->
         <div class="form-container">
             <h3>今の気分を選択してください</h3>
-            <form method="POST" action="mood1">
+            <form method="POST" action="mood1" onsubmit="return validateForm()">
                 <div class="slider-container">
                     <div class="slider-item">
                         <span class="slider-text-left">お疲れとは思わない(-5点)</span>
@@ -44,19 +44,35 @@
                         <span class="slider-text-right">手軽と思う(5点)</span>
                     </div>
                     <script>
-                        // スライダーの値を表示する関数
-                        function updateSliderValue(slider) {
-                        const value = slider.value;
-                        const valueElement = slider.nextElementSibling;
-                        valueElement.textContent = value;
+                        function validateForm() {
+                            const sliders = document.querySelectorAll('.slider');
+                            let allZero = true;
+                
+                            sliders.forEach(slider => {
+                                if (parseInt(slider.value) !== 0) {
+                                    allZero = false;
+                                }
+                            });
+                
+                            if (allZero) {
+                                alert('少なくとも1つの気分を入力してください');
+                                return false; // フォームの送信を中止
+                            }
+                
+                            return true; // フォームの送信を許可
                         }
-                    
-                        // 全てのスライダーにイベントリスナーを追加
+                
+                        function updateSliderValue(slider) {
+                            const value = slider.value;
+                            const valueElement = slider.nextElementSibling;
+                            valueElement.textContent = value;
+                        }
+                
                         const sliders = document.querySelectorAll('.slider');
                         sliders.forEach(slider => {
-                        slider.addEventListener('input', () => {
-                            updateSliderValue(slider);
-                        });
+                            slider.addEventListener('input', () => {
+                                updateSliderValue(slider);
+                            });
                         });
                     </script>
                 </div>
