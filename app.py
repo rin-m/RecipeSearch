@@ -64,7 +64,7 @@ def recommended_recipe_list():
     # リストをresultに格納
     result_list = []
     alpha = 0.5
-    R = 10
+    R = 20
     C = normalized_score_list.copy()
     recommended_recipe_list = greedy_reranking(C, R, alpha)
     result_list.append(recommended_recipe_list)
